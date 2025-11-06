@@ -1,0 +1,297 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    padding: 40px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 40px;
+    font-size: 2.5em;
+}
+
+h2 {
+    color: #667eea;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+h3 {
+    color: #555;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.input-section {
+    margin-bottom: 40px;
+}
+
+.add-person {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+#personInput {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+#personInput:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+#addPersonBtn {
+    padding: 12px 30px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#addPersonBtn:hover {
+    background: #5568d3;
+}
+
+.limit-section {
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.limit-section label {
+    font-size: 16px;
+    color: #555;
+    font-weight: 500;
+}
+
+#limitInput {
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+    width: 100px;
+}
+
+.people-list {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+#peopleList {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+#peopleList li {
+    background: white;
+    padding: 12px 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+#peopleList li:hover {
+    transform: translateY(-2px);
+}
+
+.person-name {
+    flex: 1;
+    font-weight: 500;
+    color: #333;
+}
+
+.person-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.pin-btn, .remove-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.pin-btn {
+    background: #ffd700;
+    color: #333;
+}
+
+.pin-btn.pinned {
+    background: #ffa500;
+    font-weight: bold;
+}
+
+.pin-btn:hover {
+    background: #ffed4e;
+}
+
+.remove-btn {
+    background: #ff6b6b;
+    color: white;
+}
+
+.remove-btn:hover {
+    background: #ee5a52;
+}
+
+.generate-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.generate-btn:hover {
+    transform: scale(1.02);
+}
+
+.generate-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: scale(1);
+}
+
+.result-section {
+    border-top: 2px solid #eee;
+    padding-top: 30px;
+}
+
+.result-message {
+    background: #e7f3ff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    color: #0066cc;
+    font-weight: 500;
+    text-align: center;
+}
+
+.result-message.empty {
+    display: none;
+}
+
+#resultList {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+#resultList li {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+#resultList li.pinned {
+    background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+    color: #333;
+}
+
+.result-person-name {
+    flex: 1;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.pinned-badge {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-right: 10px;
+}
+
+.reroll-btn {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+#resultList li.pinned .reroll-btn {
+    color: #333;
+    border-color: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.reroll-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: rotate(180deg);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    #peopleList,
+    #resultList {
+        grid-template-columns: 1fr;
+    }
+
+    .add-person {
+        flex-direction: column;
+    }
+
+    #addPersonBtn {
+        width: 100%;
+    }
+}
