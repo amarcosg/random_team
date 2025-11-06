@@ -5,6 +5,7 @@ Una aplicación web interactiva para generar equipos aleatorios con funcionalida
 ## ✨ Características
 
 - **Gestión de lista de personas**: Agrega y elimina personas fácilmente
+- **Carga desde archivo**: Carga personas desde el archivo personas.txt del repositorio
 - **Límite configurable**: Define cuántas personas quieres en tu equipo
 - **Generación aleatoria**: Crea equipos de forma aleatoria con un solo clic
 - **Personas fijadas**: Marca personas que DEBEN estar en el resultado final
@@ -15,9 +16,27 @@ Una aplicación web interactiva para generar equipos aleatorios con funcionalida
 ## 🚀 Cómo usar
 
 ### 1. Agregar personas
+
+Tienes dos formas de agregar personas:
+
+#### Opción A: Manualmente
 - Escribe el nombre de una persona en el campo de texto
 - Presiona el botón "➕ Agregar" o pulsa Enter
 - La persona aparecerá en la lista de personas disponibles
+
+#### Opción B: Desde archivo personas.txt
+- Haz clic en el botón "📁 Cargar personas desde personas.txt"
+- La aplicación cargará automáticamente todas las personas del archivo `personas.txt`
+- Solo se agregarán las personas que no existan ya en la lista
+- El archivo debe tener un nombre por línea
+
+**Formato del archivo personas.txt:**
+```
+María García
+Juan Martínez
+Ana López
+...
+```
 
 ### 2. Configurar el límite
 - Ajusta el número en el campo "Límite de personas a seleccionar"
@@ -80,19 +99,22 @@ La aplicación es totalmente responsive y se adapta a diferentes tamaños de pan
 
 ## 🚦 Comenzar
 
-Simplemente abre el archivo `index.html` en tu navegador favorito. No requiere instalación ni servidor.
+**IMPORTANTE:** Para que la funcionalidad de carga desde archivo funcione correctamente, necesitas ejecutar la aplicación con un servidor local (debido a las políticas de seguridad CORS del navegador).
 
 ```bash
-# Opción 1: Abre directamente el archivo
-open index.html
-
-# Opción 2: Usa un servidor local simple (Python)
+# Opción 1: Usa un servidor local simple (Python)
 python -m http.server 8000
 # Luego visita http://localhost:8000
 
-# Opción 3: Usa live-server (si tienes Node.js)
+# Opción 2: Usa live-server (si tienes Node.js)
 npx live-server
+
+# Opción 3: Si solo quieres usar la aplicación sin cargar desde archivo
+# Puedes abrir directamente el archivo index.html en tu navegador
+open index.html
 ```
+
+**Nota:** Si abres el archivo directamente (Opción 3), todas las funciones funcionarán excepto la carga desde archivo personas.txt.
 
 ## 📄 Licencia
 

@@ -19,6 +19,8 @@ class RandomTeamGenerator {
         this.peopleList = document.getElementById('peopleList');
         this.resultList = document.getElementById('resultList');
         this.resultMessage = document.getElementById('resultMessage');
+        this.loadFileBtn = document.getElementById('loadFileBtn');
+        this.fileInfo = document.getElementById('fileInfo');
     }
 
     attachEventListeners() {
@@ -28,6 +30,7 @@ class RandomTeamGenerator {
         });
         this.limitInput.addEventListener('change', (e) => this.setLimit(e.target.value));
         this.generateBtn.addEventListener('click', () => this.generateTeam());
+        this.loadFileBtn.addEventListener('click', () => this.loadFromFile());
     }
 
     addPerson() {
@@ -141,6 +144,70 @@ class RandomTeamGenerator {
         this.currentTeam[index] = newPerson;
 
         this.renderResults();
+    }
+
+    async loadFromFile() {
+        try {
+            this.fileInfo.textContent = 'Cargando...';
+            this.fileInfo.className = 'file-info';
+
+            // Fetch del archivo personas.txt desde el repo
+            const response = await fetch('personas.txt');
+
+            if (!response.ok) {
+                throw new Error('No se pudo cargar el archivo personas.txt');
+            }
+
+            const text = await response.text();
+
+            // Dividir por líneas y limpiar
+            const names = text
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+
+            if (names.length === 0) {
+                throw new Error('El archivo está vacío');
+            }
+
+            // Agregar las personas que no existan ya
+            let addedCount = 0;
+            names.forEach(name => {
+                if (!this.people.includes(name)) {
+                    this.people.push(name);
+                    addedCount++;
+                }
+            });
+
+            this.saveToLocalStorage();
+            this.render();
+
+            // Mostrar mensaje de éxito
+            if (addedCount > 0) {
+                this.fileInfo.textContent = `✓ Se agregaron ${addedCount} personas desde el archivo`;
+                this.fileInfo.className = 'file-info success';
+            } else {
+                this.fileInfo.textContent = 'Todas las personas del archivo ya estaban en la lista';
+                this.fileInfo.className = 'file-info';
+            }
+
+            // Limpiar el mensaje después de 5 segundos
+            setTimeout(() => {
+                this.fileInfo.textContent = '';
+                this.fileInfo.className = 'file-info';
+            }, 5000);
+
+        } catch (error) {
+            console.error('Error al cargar el archivo:', error);
+            this.fileInfo.textContent = `✗ Error: ${error.message}`;
+            this.fileInfo.className = 'file-info error';
+
+            // Limpiar el mensaje de error después de 5 segundos
+            setTimeout(() => {
+                this.fileInfo.textContent = '';
+                this.fileInfo.className = 'file-info';
+            }, 5000);
+        }
     }
 
     shuffleArray(array) {
