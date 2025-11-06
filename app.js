@@ -44,6 +44,7 @@ class RandomTeamGenerator {
         this.resultList = document.getElementById('resultList');
         this.resultMessage = document.getElementById('resultMessage');
         this.fileInfo = document.getElementById('fileInfo');
+        this.resetBtn = document.getElementById('resetBtn');
     }
 
     attachEventListeners() {
@@ -55,6 +56,7 @@ class RandomTeamGenerator {
         this.techLimitInput.addEventListener('change', (e) => this.setTechLimit(e.target.value));
         this.funcLimitInput.addEventListener('change', (e) => this.setFuncLimit(e.target.value));
         this.generateBtn.addEventListener('click', () => this.generateTeam());
+        this.resetBtn.addEventListener('click', () => this.resetData());
     }
 
     addPerson() {
@@ -333,6 +335,33 @@ class RandomTeamGenerator {
         });
     }
 
+    resetData() {
+        if (confirm('¿Estás seguro? Esto eliminará todos los datos y cargará las 15 personas por defecto.')) {
+            // Limpiar localStorage
+            localStorage.removeItem('randomTeamData');
+
+            // Resetear estado
+            this.people = [];
+            this.pinnedPeople = new Set();
+            this.currentTeam = [];
+            this.limit = 5;
+            this.techLimit = 3;
+            this.funcLimit = 2;
+
+            // Actualizar inputs
+            this.limitInput.value = this.limit;
+            this.techLimitInput.value = this.techLimit;
+            this.funcLimitInput.value = this.funcLimit;
+
+            // Cargar datos por defecto
+            this.loadDefaultPeople();
+
+            // Renderizar
+            this.render();
+            this.renderResults();
+        }
+    }
+
     saveToLocalStorage() {
         const data = {
             people: this.people,
@@ -350,6 +379,18 @@ class RandomTeamGenerator {
             try {
                 const data = JSON.parse(stored);
                 this.people = data.people || [];
+
+                // Validar que los datos tengan la estructura correcta (objetos con name y role)
+                const hasValidStructure = this.people.length === 0 ||
+                    (this.people[0] && typeof this.people[0] === 'object' && 'role' in this.people[0]);
+
+                if (!hasValidStructure) {
+                    // Datos antiguos sin roles, limpiar y cargar por defecto
+                    console.log('Datos antiguos detectados, cargando datos por defecto...');
+                    this.loadDefaultPeople();
+                    return;
+                }
+
                 this.pinnedPeople = new Set(data.pinnedPeople || []);
                 this.limit = data.limit || 5;
                 this.techLimit = data.techLimit !== undefined ? data.techLimit : 3;
