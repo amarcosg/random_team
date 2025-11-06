@@ -52,7 +52,6 @@ class RandomTeamGenerator {
         this.personInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.addPerson();
         });
-        this.limitInput.addEventListener('change', (e) => this.setLimit(e.target.value));
         this.techLimitInput.addEventListener('change', (e) => this.setTechLimit(e.target.value));
         this.funcLimitInput.addEventListener('change', (e) => this.setFuncLimit(e.target.value));
         this.generateBtn.addEventListener('click', () => this.generateTeam());
@@ -101,21 +100,22 @@ class RandomTeamGenerator {
         this.render();
     }
 
-    setLimit(value) {
-        this.limit = Math.max(1, parseInt(value) || 1);
+    updateTotalLimit() {
+        this.limit = this.techLimit + this.funcLimit;
         this.limitInput.value = this.limit;
-        this.saveToLocalStorage();
     }
 
     setTechLimit(value) {
         this.techLimit = Math.max(0, parseInt(value) || 0);
         this.techLimitInput.value = this.techLimit;
+        this.updateTotalLimit();
         this.saveToLocalStorage();
     }
 
     setFuncLimit(value) {
         this.funcLimit = Math.max(0, parseInt(value) || 0);
         this.funcLimitInput.value = this.funcLimit;
+        this.updateTotalLimit();
         this.saveToLocalStorage();
     }
 
@@ -125,9 +125,8 @@ class RandomTeamGenerator {
             return;
         }
 
-        // Validar que los límites de roles no excedan el límite total
-        if (this.techLimit + this.funcLimit > this.limit) {
-            alert(`La suma de límites de técnicos (${this.techLimit}) y funcionales (${this.funcLimit}) no puede exceder el límite total (${this.limit})`);
+        if (this.limit === 0) {
+            alert('Debes configurar al menos un técnico o un funcional');
             return;
         }
 
@@ -254,16 +253,17 @@ class RandomTeamGenerator {
                 const li = document.createElement('li');
 
                 const isPinned = this.pinnedPeople.has(person.name);
-                const roleColor = person.role === 'Técnico' ? '#2196F3' : '#FF9800';
-                const roleBadge = `<span style="background: ${roleColor}; color: white; padding: 3px 8px; border-radius: 5px; font-size: 12px; margin-right: 10px;">${person.role}</span>`;
+                const roleColor = person.role === 'Técnico' ? '#e3f2fd' : '#fff3e0';
+                const roleTextColor = person.role === 'Técnico' ? '#1976d2' : '#e65100';
+                const roleBadge = `<span style="background: ${roleColor}; color: ${roleTextColor}; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; border: 1px solid ${person.role === 'Técnico' ? '#90caf9' : '#ffcc80'};">${person.role}</span>`;
 
                 li.innerHTML = `
                     <span class="person-name">${roleBadge}${person.name}</span>
                     <div class="person-actions">
-                        <button class="pin-btn ${isPinned ? 'pinned' : ''}" data-name="${person.name}">
-                            ${isPinned ? '📌 Fijado' : '📍 Fijar'}
+                        <button class="pin-btn ${isPinned ? 'pinned' : ''}" data-name="${person.name}" title="${isPinned ? 'Dejar de fijar' : 'Fijar en el equipo'}">
+                            ${isPinned ? '📌' : '📍'}
                         </button>
-                        <button class="remove-btn" data-name="${person.name}">🗑️</button>
+                        <button class="remove-btn" data-name="${person.name}" title="Eliminar">🗑️</button>
                     </div>
                 `;
 
@@ -307,22 +307,34 @@ class RandomTeamGenerator {
         this.currentTeam.forEach(person => {
             const li = document.createElement('li');
             const isPinned = this.pinnedPeople.has(person.name);
-            const roleColor = person.role === 'Técnico' ? '#2196F3' : '#FF9800';
 
             if (isPinned) {
                 li.classList.add('pinned');
+                // Badge para tarjetas de personas fijadas (fondo amarillo claro)
+                const roleColor = person.role === 'Técnico' ? '#e1f5fe' : '#fff8e1';
+                const roleTextColor = person.role === 'Técnico' ? '#01579b' : '#f57f17';
+                const roleBadge = `<span style="background: ${roleColor}; color: ${roleTextColor}; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid ${person.role === 'Técnico' ? '#81d4fa' : '#ffeb3b'};">${person.role}</span>`;
+
+                li.innerHTML = `
+                    <span class="result-person-name">
+                        <span class="pinned-badge">📌</span>
+                        ${roleBadge}
+                        ${person.name}
+                    </span>
+                `;
+            } else {
+                // Badge para tarjetas normales (fondo morado)
+                const roleColor = 'rgba(255, 255, 255, 0.25)';
+                const roleBadge = `<span style="background: ${roleColor}; color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.4);">${person.role}</span>`;
+
+                li.innerHTML = `
+                    <span class="result-person-name">
+                        ${roleBadge}
+                        ${person.name}
+                    </span>
+                    <button class="reroll-btn" data-name="${person.name}" title="Cambiar por otra persona del mismo rol">🔄</button>
+                `;
             }
-
-            const roleBadge = `<span style="background: ${roleColor}; color: white; padding: 3px 8px; border-radius: 5px; font-size: 12px; margin-right: 5px;">${person.role}</span>`;
-
-            li.innerHTML = `
-                <span class="result-person-name">
-                    ${isPinned ? '<span class="pinned-badge">📌 Fijado</span>' : ''}
-                    ${roleBadge}
-                    ${person.name}
-                </span>
-                ${!isPinned ? `<button class="reroll-btn" data-name="${person.name}">🔄 Rerollear</button>` : ''}
-            `;
 
             this.resultList.appendChild(li);
         });
@@ -392,12 +404,11 @@ class RandomTeamGenerator {
                 }
 
                 this.pinnedPeople = new Set(data.pinnedPeople || []);
-                this.limit = data.limit || 5;
                 this.techLimit = data.techLimit !== undefined ? data.techLimit : 3;
                 this.funcLimit = data.funcLimit !== undefined ? data.funcLimit : 2;
-                this.limitInput.value = this.limit;
                 this.techLimitInput.value = this.techLimit;
                 this.funcLimitInput.value = this.funcLimit;
+                this.updateTotalLimit();
 
                 // Si no hay personas cargadas, cargar los datos por defecto
                 if (this.people.length === 0) {
