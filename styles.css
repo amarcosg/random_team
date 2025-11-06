@@ -78,31 +78,25 @@ h3 {
     background: #5568d3;
 }
 
-.file-upload-section {
-    margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px;
-    background: #f0f4ff;
-    border-radius: 10px;
-    border: 2px dashed #667eea;
-}
-
-.load-file-btn {
-    padding: 12px 30px;
-    background: #4caf50;
-    color: white;
-    border: none;
+#roleSelect {
+    padding: 12px 20px;
+    border: 2px solid #ddd;
     border-radius: 10px;
     font-size: 16px;
+    background: white;
     cursor: pointer;
-    transition: background 0.3s;
-    font-weight: 500;
+    transition: border-color 0.3s;
 }
 
-.load-file-btn:hover {
-    background: #45a049;
+#roleSelect:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.file-info-section {
+    margin-bottom: 20px;
+    min-height: 25px;
+    text-align: center;
 }
 
 .file-info {
@@ -123,7 +117,8 @@ h3 {
 
 .limit-section {
     margin-bottom: 30px;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 100px auto 100px auto 100px;
     align-items: center;
     gap: 15px;
 }
@@ -134,7 +129,7 @@ h3 {
     font-weight: 500;
 }
 
-#limitInput {
+#limitInput, #techLimitInput, #funcLimitInput {
     padding: 10px 15px;
     border: 2px solid #ddd;
     border-radius: 10px;
@@ -313,7 +308,7 @@ h3 {
 
 .reroll-btn:hover {
     background: rgba(255, 255, 255, 0.4);
-    transform: rotate(180deg);
+    transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
@@ -338,12 +333,12 @@ h3 {
         width: 100%;
     }
 
-    .file-upload-section {
-        flex-direction: column;
-        align-items: stretch;
+    .limit-section {
+        grid-template-columns: auto 80px;
+        gap: 10px;
     }
 
-    .load-file-btn {
-        width: 100%;
+    #limitInput, #techLimitInput, #funcLimitInput {
+        width: 80px;
     }
 }

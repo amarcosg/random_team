@@ -1,8 +1,29 @@
 class RandomTeamGenerator {
     constructor() {
+        // Datos por defecto
+        this.defaultPeople = [
+            { name: 'María García', role: 'Técnico' },
+            { name: 'Juan Martínez', role: 'Funcional' },
+            { name: 'Ana López', role: 'Técnico' },
+            { name: 'Carlos Rodríguez', role: 'Funcional' },
+            { name: 'Laura Fernández', role: 'Técnico' },
+            { name: 'Pedro Sánchez', role: 'Técnico' },
+            { name: 'Carmen Díaz', role: 'Funcional' },
+            { name: 'Miguel Torres', role: 'Técnico' },
+            { name: 'Isabel Ruiz', role: 'Funcional' },
+            { name: 'Francisco Jiménez', role: 'Técnico' },
+            { name: 'Elena Moreno', role: 'Funcional' },
+            { name: 'David Álvarez', role: 'Técnico' },
+            { name: 'Sara Romero', role: 'Funcional' },
+            { name: 'Antonio Navarro', role: 'Técnico' },
+            { name: 'Lucía Gutiérrez', role: 'Funcional' }
+        ];
+
         this.people = [];
         this.pinnedPeople = new Set();
         this.limit = 5;
+        this.techLimit = 3;
+        this.funcLimit = 2;
         this.currentTeam = [];
 
         this.initializeElements();
@@ -13,13 +34,15 @@ class RandomTeamGenerator {
 
     initializeElements() {
         this.personInput = document.getElementById('personInput');
+        this.roleSelect = document.getElementById('roleSelect');
         this.addPersonBtn = document.getElementById('addPersonBtn');
         this.limitInput = document.getElementById('limitInput');
+        this.techLimitInput = document.getElementById('techLimitInput');
+        this.funcLimitInput = document.getElementById('funcLimitInput');
         this.generateBtn = document.getElementById('generateBtn');
         this.peopleList = document.getElementById('peopleList');
         this.resultList = document.getElementById('resultList');
         this.resultMessage = document.getElementById('resultMessage');
-        this.loadFileBtn = document.getElementById('loadFileBtn');
         this.fileInfo = document.getElementById('fileInfo');
     }
 
@@ -29,24 +52,26 @@ class RandomTeamGenerator {
             if (e.key === 'Enter') this.addPerson();
         });
         this.limitInput.addEventListener('change', (e) => this.setLimit(e.target.value));
+        this.techLimitInput.addEventListener('change', (e) => this.setTechLimit(e.target.value));
+        this.funcLimitInput.addEventListener('change', (e) => this.setFuncLimit(e.target.value));
         this.generateBtn.addEventListener('click', () => this.generateTeam());
-        this.loadFileBtn.addEventListener('click', () => this.loadFromFile());
     }
 
     addPerson() {
         const name = this.personInput.value.trim();
+        const role = this.roleSelect.value;
 
         if (!name) {
             alert('Por favor, ingresa un nombre');
             return;
         }
 
-        if (this.people.includes(name)) {
+        if (this.people.find(p => p.name === name)) {
             alert('Esta persona ya está en la lista');
             return;
         }
 
-        this.people.push(name);
+        this.people.push({ name, role });
         this.personInput.value = '';
         this.personInput.focus();
         this.saveToLocalStorage();
@@ -54,11 +79,11 @@ class RandomTeamGenerator {
     }
 
     removePerson(name) {
-        this.people = this.people.filter(p => p !== name);
+        this.people = this.people.filter(p => p.name !== name);
         this.pinnedPeople.delete(name);
 
         // Si la persona estaba en el equipo generado, la eliminamos también
-        this.currentTeam = this.currentTeam.filter(p => p !== name);
+        this.currentTeam = this.currentTeam.filter(p => p.name !== name);
 
         this.saveToLocalStorage();
         this.render();
@@ -80,13 +105,33 @@ class RandomTeamGenerator {
         this.saveToLocalStorage();
     }
 
+    setTechLimit(value) {
+        this.techLimit = Math.max(0, parseInt(value) || 0);
+        this.techLimitInput.value = this.techLimit;
+        this.saveToLocalStorage();
+    }
+
+    setFuncLimit(value) {
+        this.funcLimit = Math.max(0, parseInt(value) || 0);
+        this.funcLimitInput.value = this.funcLimit;
+        this.saveToLocalStorage();
+    }
+
     generateTeam() {
         if (this.people.length === 0) {
             alert('Agrega al menos una persona a la lista');
             return;
         }
 
-        const pinnedArray = Array.from(this.pinnedPeople);
+        // Validar que los límites de roles no excedan el límite total
+        if (this.techLimit + this.funcLimit > this.limit) {
+            alert(`La suma de límites de técnicos (${this.techLimit}) y funcionales (${this.funcLimit}) no puede exceder el límite total (${this.limit})`);
+            return;
+        }
+
+        const pinnedArray = Array.from(this.pinnedPeople).map(name =>
+            this.people.find(p => p.name === name)
+        );
 
         if (pinnedArray.length > this.limit) {
             alert(`Has fijado ${pinnedArray.length} personas, pero el límite es ${this.limit}. Aumenta el límite o reduce las personas fijadas.`);
@@ -98,22 +143,58 @@ class RandomTeamGenerator {
             return;
         }
 
+        // Contar cuántos técnicos y funcionales hay fijados
+        const pinnedTechs = pinnedArray.filter(p => p.role === 'Técnico').length;
+        const pinnedFuncs = pinnedArray.filter(p => p.role === 'Funcional').length;
+
+        if (pinnedTechs > this.techLimit) {
+            alert(`Has fijado ${pinnedTechs} técnicos, pero el límite es ${this.techLimit}`);
+            return;
+        }
+
+        if (pinnedFuncs > this.funcLimit) {
+            alert(`Has fijado ${pinnedFuncs} funcionales, pero el límite es ${this.funcLimit}`);
+            return;
+        }
+
         // Empezar con las personas fijadas
         this.currentTeam = [...pinnedArray];
 
-        // Obtener personas no fijadas
-        const unpinnedPeople = this.people.filter(p => !this.pinnedPeople.has(p));
+        // Obtener personas no fijadas por rol
+        const unpinnedTechs = this.people.filter(p =>
+            p.role === 'Técnico' && !this.pinnedPeople.has(p.name)
+        );
+        const unpinnedFuncs = this.people.filter(p =>
+            p.role === 'Funcional' && !this.pinnedPeople.has(p.name)
+        );
 
-        // Calcular cuántas personas adicionales necesitamos
+        // Calcular cuántos técnicos y funcionales adicionales necesitamos
+        const techsNeeded = this.techLimit - pinnedTechs;
+        const funcsNeeded = this.funcLimit - pinnedFuncs;
+
+        // Seleccionar técnicos aleatorios
+        const shuffledTechs = this.shuffleArray([...unpinnedTechs]);
+        const selectedTechs = shuffledTechs.slice(0, techsNeeded);
+
+        // Seleccionar funcionales aleatorios
+        const shuffledFuncs = this.shuffleArray([...unpinnedFuncs]);
+        const selectedFuncs = shuffledFuncs.slice(0, funcsNeeded);
+
+        // Agregar al equipo
+        this.currentTeam = [...this.currentTeam, ...selectedTechs, ...selectedFuncs];
+
+        // Si no llegamos al límite total, completar con cualquier rol disponible
         const remainingSlots = this.limit - this.currentTeam.length;
+        if (remainingSlots > 0) {
+            const allUnselected = this.people.filter(p =>
+                !this.currentTeam.find(t => t.name === p.name)
+            );
+            const shuffledRemaining = this.shuffleArray(allUnselected);
+            const additional = shuffledRemaining.slice(0, remainingSlots);
+            this.currentTeam = [...this.currentTeam, ...additional];
+        }
 
-        // Seleccionar aleatoriamente de las personas no fijadas
-        const shuffled = this.shuffleArray([...unpinnedPeople]);
-        const selected = shuffled.slice(0, remainingSlots);
-
-        this.currentTeam = [...this.currentTeam, ...selected];
-
-        // Mezclar el orden final para que las personas fijadas no estén siempre al principio
+        // Mezclar el orden final
         this.currentTeam = this.shuffleArray(this.currentTeam);
 
         this.renderResults();
@@ -125,13 +206,18 @@ class RandomTeamGenerator {
             return;
         }
 
-        // Obtener personas que no están en el equipo actual y no están fijadas
+        const personToReplace = this.currentTeam.find(p => p.name === name);
+        const roleToReplace = personToReplace.role;
+
+        // Obtener personas del mismo rol que no están en el equipo actual
         const availablePeople = this.people.filter(p =>
-            !this.currentTeam.includes(p) && !this.pinnedPeople.has(p)
+            p.role === roleToReplace &&
+            !this.currentTeam.find(t => t.name === p.name) &&
+            !this.pinnedPeople.has(p.name)
         );
 
         if (availablePeople.length === 0) {
-            alert('No hay más personas disponibles para reemplazar');
+            alert(`No hay más personas con rol ${roleToReplace} disponibles para reemplazar`);
             return;
         }
 
@@ -140,74 +226,10 @@ class RandomTeamGenerator {
         const newPerson = availablePeople[randomIndex];
 
         // Reemplazar la persona en el equipo
-        const index = this.currentTeam.indexOf(name);
+        const index = this.currentTeam.findIndex(p => p.name === name);
         this.currentTeam[index] = newPerson;
 
         this.renderResults();
-    }
-
-    async loadFromFile() {
-        try {
-            this.fileInfo.textContent = 'Cargando...';
-            this.fileInfo.className = 'file-info';
-
-            // Fetch del archivo personas.txt desde el repo
-            const response = await fetch('personas.txt');
-
-            if (!response.ok) {
-                throw new Error('No se pudo cargar el archivo personas.txt');
-            }
-
-            const text = await response.text();
-
-            // Dividir por líneas y limpiar
-            const names = text
-                .split('\n')
-                .map(line => line.trim())
-                .filter(line => line.length > 0);
-
-            if (names.length === 0) {
-                throw new Error('El archivo está vacío');
-            }
-
-            // Agregar las personas que no existan ya
-            let addedCount = 0;
-            names.forEach(name => {
-                if (!this.people.includes(name)) {
-                    this.people.push(name);
-                    addedCount++;
-                }
-            });
-
-            this.saveToLocalStorage();
-            this.render();
-
-            // Mostrar mensaje de éxito
-            if (addedCount > 0) {
-                this.fileInfo.textContent = `✓ Se agregaron ${addedCount} personas desde el archivo`;
-                this.fileInfo.className = 'file-info success';
-            } else {
-                this.fileInfo.textContent = 'Todas las personas del archivo ya estaban en la lista';
-                this.fileInfo.className = 'file-info';
-            }
-
-            // Limpiar el mensaje después de 5 segundos
-            setTimeout(() => {
-                this.fileInfo.textContent = '';
-                this.fileInfo.className = 'file-info';
-            }, 5000);
-
-        } catch (error) {
-            console.error('Error al cargar el archivo:', error);
-            this.fileInfo.textContent = `✗ Error: ${error.message}`;
-            this.fileInfo.className = 'file-info error';
-
-            // Limpiar el mensaje de error después de 5 segundos
-            setTimeout(() => {
-                this.fileInfo.textContent = '';
-                this.fileInfo.className = 'file-info';
-            }, 5000);
-        }
     }
 
     shuffleArray(array) {
@@ -224,20 +246,22 @@ class RandomTeamGenerator {
         this.peopleList.innerHTML = '';
 
         if (this.people.length === 0) {
-            this.peopleList.innerHTML = '<li style="grid-column: 1/-1; text-align: center; color: #999;">No hay personas en la lista. Agrega algunas personas para comenzar.</li>';
+            this.peopleList.innerHTML = '<li style="grid-column: 1/-1; text-align: center; color: #999;">No hay personas en la lista. Se cargarán automáticamente al refrescar.</li>';
         } else {
             this.people.forEach(person => {
                 const li = document.createElement('li');
 
-                const isPinned = this.pinnedPeople.has(person);
+                const isPinned = this.pinnedPeople.has(person.name);
+                const roleColor = person.role === 'Técnico' ? '#2196F3' : '#FF9800';
+                const roleBadge = `<span style="background: ${roleColor}; color: white; padding: 3px 8px; border-radius: 5px; font-size: 12px; margin-right: 10px;">${person.role}</span>`;
 
                 li.innerHTML = `
-                    <span class="person-name">${person}</span>
+                    <span class="person-name">${roleBadge}${person.name}</span>
                     <div class="person-actions">
-                        <button class="pin-btn ${isPinned ? 'pinned' : ''}" data-name="${person}">
+                        <button class="pin-btn ${isPinned ? 'pinned' : ''}" data-name="${person.name}">
                             ${isPinned ? '📌 Fijado' : '📍 Fijar'}
                         </button>
-                        <button class="remove-btn" data-name="${person}">🗑️</button>
+                        <button class="remove-btn" data-name="${person.name}">🗑️</button>
                     </div>
                 `;
 
@@ -272,23 +296,30 @@ class RandomTeamGenerator {
             return;
         }
 
+        const techCount = this.currentTeam.filter(p => p.role === 'Técnico').length;
+        const funcCount = this.currentTeam.filter(p => p.role === 'Funcional').length;
+
         this.resultMessage.classList.remove('empty');
-        this.resultMessage.textContent = `Equipo generado: ${this.currentTeam.length} de ${this.limit} personas`;
+        this.resultMessage.textContent = `Equipo generado: ${this.currentTeam.length} personas (${techCount} técnicos, ${funcCount} funcionales)`;
 
         this.currentTeam.forEach(person => {
             const li = document.createElement('li');
-            const isPinned = this.pinnedPeople.has(person);
+            const isPinned = this.pinnedPeople.has(person.name);
+            const roleColor = person.role === 'Técnico' ? '#2196F3' : '#FF9800';
 
             if (isPinned) {
                 li.classList.add('pinned');
             }
 
+            const roleBadge = `<span style="background: ${roleColor}; color: white; padding: 3px 8px; border-radius: 5px; font-size: 12px; margin-right: 5px;">${person.role}</span>`;
+
             li.innerHTML = `
                 <span class="result-person-name">
                     ${isPinned ? '<span class="pinned-badge">📌 Fijado</span>' : ''}
-                    ${person}
+                    ${roleBadge}
+                    ${person.name}
                 </span>
-                ${!isPinned ? `<button class="reroll-btn" data-name="${person}">🔄 Rerollear</button>` : ''}
+                ${!isPinned ? `<button class="reroll-btn" data-name="${person.name}">🔄 Rerollear</button>` : ''}
             `;
 
             this.resultList.appendChild(li);
@@ -306,7 +337,9 @@ class RandomTeamGenerator {
         const data = {
             people: this.people,
             pinnedPeople: Array.from(this.pinnedPeople),
-            limit: this.limit
+            limit: this.limit,
+            techLimit: this.techLimit,
+            funcLimit: this.funcLimit
         };
         localStorage.setItem('randomTeamData', JSON.stringify(data));
     }
@@ -319,11 +352,37 @@ class RandomTeamGenerator {
                 this.people = data.people || [];
                 this.pinnedPeople = new Set(data.pinnedPeople || []);
                 this.limit = data.limit || 5;
+                this.techLimit = data.techLimit !== undefined ? data.techLimit : 3;
+                this.funcLimit = data.funcLimit !== undefined ? data.funcLimit : 2;
                 this.limitInput.value = this.limit;
+                this.techLimitInput.value = this.techLimit;
+                this.funcLimitInput.value = this.funcLimit;
+
+                // Si no hay personas cargadas, cargar los datos por defecto
+                if (this.people.length === 0) {
+                    this.loadDefaultPeople();
+                }
             } catch (e) {
                 console.error('Error loading data from localStorage:', e);
+                this.loadDefaultPeople();
             }
+        } else {
+            // Primera vez, cargar datos por defecto
+            this.loadDefaultPeople();
         }
+    }
+
+    loadDefaultPeople() {
+        this.people = [...this.defaultPeople];
+        this.saveToLocalStorage();
+        this.fileInfo.textContent = '✓ Se cargaron 15 personas por defecto';
+        this.fileInfo.className = 'file-info success';
+
+        // Limpiar el mensaje después de 5 segundos
+        setTimeout(() => {
+            this.fileInfo.textContent = '';
+            this.fileInfo.className = 'file-info';
+        }, 5000);
     }
 }
 

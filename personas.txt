@@ -1,15 +1,15 @@
-María García
-Juan Martínez
-Ana López
-Carlos Rodríguez
-Laura Fernández
-Pedro Sánchez
-Carmen Díaz
-Miguel Torres
-Isabel Ruiz
-Francisco Jiménez
-Elena Moreno
-David Álvarez
-Sara Romero
-Antonio Navarro
-Lucía Gutiérrez
+María García, Técnico
+Juan Martínez, Funcional
+Ana López, Técnico
+Carlos Rodríguez, Funcional
+Laura Fernández, Técnico
+Pedro Sánchez, Técnico
+Carmen Díaz, Funcional
+Miguel Torres, Técnico
+Isabel Ruiz, Funcional
+Francisco Jiménez, Técnico
+Elena Moreno, Funcional
+David Álvarez, Técnico
+Sara Romero, Funcional
+Antonio Navarro, Técnico
+Lucía Gutiérrez, Funcional

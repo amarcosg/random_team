@@ -1,62 +1,64 @@
 # 🎲 Generador de Equipos Aleatorios
 
-Una aplicación web interactiva para generar equipos aleatorios con funcionalidades avanzadas de selección y personalización.
+Una aplicación web interactiva para generar equipos aleatorios con gestión de roles (Técnico/Funcional) y límites configurables.
 
 ## ✨ Características
 
-- **Gestión de lista de personas**: Agrega y elimina personas fácilmente
-- **Carga desde archivo**: Carga personas desde el archivo personas.txt del repositorio
-- **Límite configurable**: Define cuántas personas quieres en tu equipo
-- **Generación aleatoria**: Crea equipos de forma aleatoria con un solo clic
+- **Gestión de lista de personas con roles**: Agrega personas con su rol (Técnico o Funcional)
+- **Datos por defecto**: 15 personas precargadas automáticamente al iniciar
+- **Límites configurables por rol**: Define límites separados para técnicos y funcionales
+- **Generación aleatoria inteligente**: Respeta los límites de roles al generar equipos
 - **Personas fijadas**: Marca personas que DEBEN estar en el resultado final
-- **Reroll individual**: Regenera cualquier miembro del equipo (excepto los fijados)
+- **Reroll individual por rol**: Regenera miembros manteniendo su rol
 - **Persistencia de datos**: Tus datos se guardan automáticamente en el navegador
-- **Interfaz intuitiva**: Diseño moderno y fácil de usar
+- **Interfaz intuitiva**: Diseño moderno con badges de colores por rol
 
 ## 🚀 Cómo usar
 
-### 1. Agregar personas
+### 1. Inicio automático
+- Al abrir la aplicación por primera vez, se cargan automáticamente 15 personas con sus roles
+- Los datos se guardan en localStorage y persisten entre sesiones
 
-Tienes dos formas de agregar personas:
-
-#### Opción A: Manualmente
+### 2. Agregar personas manualmente
 - Escribe el nombre de una persona en el campo de texto
+- Selecciona el rol (Técnico o Funcional)
 - Presiona el botón "➕ Agregar" o pulsa Enter
-- La persona aparecerá en la lista de personas disponibles
+- La persona aparecerá en la lista con un badge de color:
+  - 🔵 Azul para Técnicos
+  - 🟠 Naranja para Funcionales
 
-#### Opción B: Desde archivo personas.txt
-- Haz clic en el botón "📁 Cargar personas desde personas.txt"
-- La aplicación cargará automáticamente todas las personas del archivo `personas.txt`
-- Solo se agregarán las personas que no existan ya en la lista
-- El archivo debe tener un nombre por línea
+### 3. Configurar límites
+Hay tres límites que puedes configurar:
 
-**Formato del archivo personas.txt:**
-```
-María García
-Juan Martínez
-Ana López
-...
-```
+- **Límite total**: Número máximo de personas en el equipo
+- **Límite técnicos**: Número máximo de técnicos en el equipo
+- **Límite funcionales**: Número máximo de funcionales en el equipo
 
-### 2. Configurar el límite
-- Ajusta el número en el campo "Límite de personas a seleccionar"
-- Este será el tamaño máximo de tu equipo generado
+**Importante**: La suma de límites de técnicos y funcionales no debe exceder el límite total.
 
-### 3. Fijar personas (opcional)
+**Ejemplo válido**:
+- Límite total: 5
+- Límite técnicos: 3
+- Límite funcionales: 2
+
+### 4. Fijar personas (opcional)
 - Haz clic en el botón "📍 Fijar" junto a cualquier persona
 - Las personas fijadas aparecerán SIEMPRE en el equipo generado
 - El botón cambiará a "📌 Fijado" para indicar que está fijada
-- Puedes volver a hacer clic para desfijar
+- Las personas fijadas también respetan los límites de roles
 
-### 4. Generar equipo
+### 5. Generar equipo
 - Presiona el botón "🎯 Generar Equipo Aleatorio"
-- Se generará un equipo aleatorio que incluirá:
-  - Todas las personas fijadas
-  - Personas aleatorias hasta completar el límite
+- Se generará un equipo aleatorio que:
+  - Incluye todas las personas fijadas
+  - Respeta el límite de técnicos configurado
+  - Respeta el límite de funcionales configurado
+  - Completa hasta el límite total si es necesario
+- El mensaje mostrará: "Equipo generado: X personas (Y técnicos, Z funcionales)"
 
-### 5. Rerollear miembros
+### 6. Rerollear miembros
 - Una vez generado el equipo, verás un botón "🔄 Rerollear" junto a cada persona no fijada
-- Haz clic para reemplazar esa persona con otra aleatoria de la lista
+- Haz clic para reemplazar esa persona con otra del **mismo rol**
 - Las personas fijadas no pueden ser rerolleadas
 
 ## 📋 Validaciones
@@ -65,23 +67,39 @@ La aplicación incluye las siguientes validaciones:
 
 - No puedes agregar personas con nombres duplicados
 - No puedes agregar personas con nombres vacíos
-- El límite no puede ser mayor al número total de personas disponibles
-- El número de personas fijadas no puede exceder el límite configurado
+- El límite total no puede ser mayor al número de personas disponibles
+- La suma de límites de técnicos y funcionales no puede exceder el límite total
+- El número de personas fijadas no puede exceder el límite total
+- El número de técnicos fijados no puede exceder el límite de técnicos
+- El número de funcionales fijados no puede exceder el límite de funcionales
 - Solo puedes rerollear personas que no estén fijadas
+- Al rerollear, solo se eligen personas del mismo rol
+
+## 👥 Personas por defecto
+
+La aplicación viene con 15 personas precargadas:
+
+**Técnicos**: María García, Ana López, Laura Fernández, Pedro Sánchez, Miguel Torres, Francisco Jiménez, David Álvarez, Antonio Navarro
+
+**Funcionales**: Juan Martínez, Carlos Rodríguez, Carmen Díaz, Isabel Ruiz, Elena Moreno, Sara Romero, Lucía Gutiérrez
+
+Puedes modificar, eliminar o agregar más personas según tus necesidades.
 
 ## 💾 Almacenamiento
 
 Los datos se guardan automáticamente en el localStorage del navegador, incluyendo:
-- Lista de personas
+- Lista de personas con sus roles
 - Personas fijadas
-- Límite configurado
+- Límite total configurado
+- Límite de técnicos configurado
+- Límite de funcionales configurado
 
 Esto significa que tus datos permanecerán aunque cierres o refresques la página.
 
 ## 🛠️ Tecnologías
 
 - HTML5
-- CSS3 (con gradientes y animaciones)
+- CSS3 (con gradientes, grid layout y animaciones)
 - JavaScript vanilla (sin dependencias)
 - LocalStorage API
 
@@ -92,29 +110,33 @@ La aplicación es totalmente responsive y se adapta a diferentes tamaños de pan
 ## 🎨 Características visuales
 
 - Diseño moderno con gradientes
+- Badges de colores por rol (Azul=Técnico, Naranja=Funcional)
 - Animaciones suaves
 - Indicadores visuales claros para personas fijadas
 - Colores diferenciados para distintos estados
 - Interfaz intuitiva y fácil de navegar
+- Grid layout para mejor organización
 
 ## 🚦 Comenzar
 
-**IMPORTANTE:** Para que la funcionalidad de carga desde archivo funcione correctamente, necesitas ejecutar la aplicación con un servidor local (debido a las políticas de seguridad CORS del navegador).
+Simplemente abre el archivo `index.html` en tu navegador favorito. No requiere instalación ni servidor.
 
 ```bash
-# Opción 1: Usa un servidor local simple (Python)
-python -m http.server 8000
-# Luego visita http://localhost:8000
-
-# Opción 2: Usa live-server (si tienes Node.js)
-npx live-server
-
-# Opción 3: Si solo quieres usar la aplicación sin cargar desde archivo
-# Puedes abrir directamente el archivo index.html en tu navegador
+# Abre directamente el archivo
 open index.html
 ```
 
-**Nota:** Si abres el archivo directamente (Opción 3), todas las funciones funcionarán excepto la carga desde archivo personas.txt.
+**No necesitas servidor local** - toda la funcionalidad está embebida en el código JavaScript.
+
+## 💡 Casos de uso
+
+Esta aplicación es ideal para:
+
+- Formar equipos de trabajo balanceados por roles
+- Asignar proyectos con requisitos técnicos y funcionales
+- Rotar responsabilidades en equipos
+- Distribuir tareas entre diferentes especialidades
+- Cualquier escenario donde necesites equipos aleatorios con restricciones de roles
 
 ## 📄 Licencia
 

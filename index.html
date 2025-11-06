@@ -15,17 +15,26 @@
             <h2>Lista de Personas</h2>
             <div class="add-person">
                 <input type="text" id="personInput" placeholder="Nombre de la persona" />
+                <select id="roleSelect">
+                    <option value="Técnico">Técnico</option>
+                    <option value="Funcional">Funcional</option>
+                </select>
                 <button id="addPersonBtn">➕ Agregar</button>
             </div>
 
-            <div class="file-upload-section">
-                <button id="loadFileBtn" class="load-file-btn">📁 Cargar personas desde personas.txt</button>
+            <div class="file-info-section">
                 <span id="fileInfo" class="file-info"></span>
             </div>
 
             <div class="limit-section">
-                <label for="limitInput">Límite de personas a seleccionar:</label>
+                <label for="limitInput">Límite total:</label>
                 <input type="number" id="limitInput" min="1" value="5" />
+
+                <label for="techLimitInput">Límite técnicos:</label>
+                <input type="number" id="techLimitInput" min="0" value="3" />
+
+                <label for="funcLimitInput">Límite funcionales:</label>
+                <input type="number" id="funcLimitInput" min="0" value="2" />
             </div>
 
             <div class="people-list">
